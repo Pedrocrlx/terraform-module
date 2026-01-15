@@ -1,7 +1,7 @@
-resource "kubernetes_service" "backend" {
+resource "kubernetes_service_v1" "backend" {
   metadata {
     name      = "backend-service"
-    namespace = kubernetes_namespace.ns.metadata[0].name
+    namespace = kubernetes_namespace_v1.ns.metadata[0].name
   }
   spec {
     selector = {
@@ -14,10 +14,10 @@ resource "kubernetes_service" "backend" {
   }
 }
 
-resource "kubernetes_deployment" "backend" {
+resource "kubernetes_deployment_v1" "backend" {
   metadata {
     name      = "backend"
-    namespace = kubernetes_namespace.ns.metadata[0].name
+    namespace = kubernetes_namespace_v1.ns.metadata[0].name
   }
   spec {
     replicas = 1
@@ -35,29 +35,34 @@ resource "kubernetes_deployment" "backend" {
       spec {
         container {
           name              = "backend"
-          image             = "notes-backend:1.0" # A TUA VERSÃO MAIS RECENTE
-          image_pull_policy = "Never"            # CRUCIAL PARA MINIKUBE
+          image             = "notes-backend:1.0"
+          image_pull_policy = "IfNotPresent"            
           
           port {
             container_port = 8000
           }
 
-          # Variáveis de Ambiente
+          
           env {
             name  = "DB_HOST"
-            # Monta o nome completo automaticamente: db-service.notes-app.svc.cluster.local
-            value = "${kubernetes_service.db.metadata[0].name}.${kubernetes_namespace.ns.metadata[0].name}.svc.cluster.local"
+            value = "${kubernetes_service_v1.db.metadata[0].name}"
           }
           env {
             name = "DB_PASSWORD"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.db_secret.metadata[0].name
+                name = kubernetes_secret_v1.db_secret.metadata[0].name
                 key  = "POSTGRES_PASSWORD"
               }
             }
           }
         }
+        dns_config {
+          option {
+          name  = "ndots"
+          value = "2"
+        }
+}
       }
     }
   }

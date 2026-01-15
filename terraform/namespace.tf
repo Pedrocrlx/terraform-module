@@ -1,9 +1,6 @@
-resource "kubernetes_namespace" "ns" {
+resource "kubernetes_namespace_v1" "ns" {
   metadata {
     name = var.namespace
   }
 }
 
-variable "db_password" {
-  default = "postgres" 
-}
