@@ -3,4 +3,4 @@ echo "Applying Infrastructure..."
 
 cd terraform
 
-terraform apply -auto-approve
+terraform apply k8s.plan 
