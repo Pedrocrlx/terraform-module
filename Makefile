@@ -17,6 +17,10 @@ apply: ## Apply the infrastructure (Terraform apply)
 	chmod +x scripts/apply.sh
 	scripts/apply.sh
 
+plan:
+	chmod +x scripts/plan.sh
+	scripts/plan.sh
+
 view: ## Port-forwarding to access services locally (backend:8000, frontend:3000)
 	@echo " Port-forwarding to access services locally..."
 	kubectl port-forward svc/backend-service 8000:8000 & kubectl port-forward svc/frontend-service 3000:3000
