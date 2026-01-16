@@ -1,5 +1,9 @@
 terraform {
   required_providers {
+    minikube = {
+      source  = "scottwinkler/minikube"
+      version = "0.4.4"
+    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.20.0"
@@ -7,7 +11,12 @@ terraform {
   }
 }
 
+provider "minikube" {}
+
 provider "kubernetes" {
-  config_path    = "~/.kube/config" # Path to kubeconfig file
-  config_context = "minikube"       # Context name for Minikube
+  host = minikube_cluster.docker.host
+
+  client_certificate     = minikube_cluster.docker.client_certificate
+  client_key             = minikube_cluster.docker.client_key
+  cluster_ca_certificate = minikube_cluster.docker.cluster_ca_certificate
 }
