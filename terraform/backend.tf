@@ -48,7 +48,7 @@ resource "kubernetes_deployment_v1" "backend" {
             value = "${kubernetes_service_v1.db.metadata[0].name}"
           }
           env {
-            name = "DB_PASSWORD"
+            name = "POSTGRES_PASSWORD"
             value_from {
               secret_key_ref {
                 name = kubernetes_secret_v1.db_secret.metadata[0].name
@@ -66,4 +66,6 @@ resource "kubernetes_deployment_v1" "backend" {
       }
     }
   }
+
+  depends_on = [null_resource.docker_images]
 }

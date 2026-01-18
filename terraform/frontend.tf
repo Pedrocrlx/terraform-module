@@ -35,7 +35,7 @@ resource "kubernetes_deployment_v1" "frontend" {
       spec {
         container {
           name              = "frontend"
-          image             = "notes-frontend:1.0" # A TUA VERSÃO MAIS RECENTE
+          image             = "notes-frontend:1.0"
           image_pull_policy = "Never"
           port {
             container_port = 80
@@ -44,4 +44,6 @@ resource "kubernetes_deployment_v1" "frontend" {
       }
     }
   }
+
+  depends_on = [null_resource.docker_images]
 }

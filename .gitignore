@@ -1,1 +1,6 @@
 terraform/.terraform
+terraform/.terraform.lock.hcl
+.vscode 
+.terraformrc
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
