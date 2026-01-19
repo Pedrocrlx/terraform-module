@@ -4,7 +4,7 @@ Professional Infrastructure-as-Code (IaC) project managing a microservices-based
 
 ## 🏗 Architecture
 
-The system consists of a Frontend (Nginx/React), Backend (Python/Flask), and a PostgreSQL Database. All components are containerized and orchestrated by Kubernetes, with Minikube as the local development cluster.
+The system consists of a Frontend (Nginx/HTML), Backend (Python/FastAPI), and a PostgreSQL Database. All components are containerized and orchestrated by Kubernetes, with Minikube as the local development cluster.
 
 ```mermaid
 graph TD
