@@ -9,6 +9,7 @@ resource "minikube_cluster" "docker" {
   # Addons
   addons = [
     "ingress",
+    "ingress-dns",
     "default-storageclass",
     "storage-provisioner",
     "registry"

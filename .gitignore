@@ -4,3 +4,6 @@ terraform/.terraform.lock.hcl
 .terraformrc
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
+terraform/k8s.plan
+terraform/terraform.tfstate.1768780465.backup
+

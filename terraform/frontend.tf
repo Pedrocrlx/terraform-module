@@ -8,8 +8,8 @@ resource "kubernetes_service_v1" "frontend" {
       app = "frontend"
     }
     port {
-      port        = 80
-      target_port = 80
+      port        = 3000
+      target_port = 3000
     }
   }
 }
@@ -38,7 +38,7 @@ resource "kubernetes_deployment_v1" "frontend" {
           image             = "notes-frontend:1.0"
           image_pull_policy = "Never"
           port {
-            container_port = 80
+            container_port = 3000
           }
         }
       }
