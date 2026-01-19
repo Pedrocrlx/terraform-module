@@ -3,11 +3,10 @@ resource "tls_private_key" "pk" {
 }
 
 resource "tls_self_signed_cert" "cert" {
-  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.pk.private_key_pem
 
   subject {
-    common_name  = "example.com"
+    common_name  = "notes-app.local"
     organization = "ACME Examples, Inc"
   }
 
@@ -18,6 +17,16 @@ resource "tls_self_signed_cert" "cert" {
     "digital_signature",
     "server_auth",
   ]
+}
+
+resource "local_file" "domain_crt" {
+  content  = tls_self_signed_cert.cert.cert_pem
+  filename = "${path.module}/../domain.crt"
+}
+
+resource "local_file" "domain_key" {
+  content  = tls_private_key.pk.private_key_pem
+  filename = "${path.module}/../domain.key"
 }
 
 resource "kubernetes_secret_v1" "tls_secret" {

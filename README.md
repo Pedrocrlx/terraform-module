@@ -68,7 +68,17 @@ This project uses a `Makefile` to simplify operations.
     - Backend: http://localhost:8000
     
     **Option B: Ingress (HTTPS)**
-    To use the secure ingress, ensure `minikube tunnel` is running (sudo required) or configure `/etc/hosts` to point `frontend.local` to `minikube ip`.
+    To use the secure ingress with TLS:
+    
+    **Terminal 1** (keep running):
+    ```bash
+    make hosts            # Configure /etc/hosts (one-time setup)
+    make ingress-forward  # Start port forwarding
+    ```
+    
+    **Browser**:
+    - Frontend: https://notes-app.local:8443
+    - Backend API: https://notes-app.local:8443/notes
     
     The Ingress is configured with a **Self-Signed Certificate**. You will need to accept the security warning in your browser.
 

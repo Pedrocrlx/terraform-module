@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Notes App</title>
   <style>
-    body { font-family: Arial; max-width: 600px; margin: 20px auto; }
-    input, button { padding: 5px; margin: 5px 0; }
-    ul { padding-left: 20px; }
+    body {
+      font-family: Arial;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+
+    input,
+    button {
+      padding: 5px;
+      margin: 5px 0;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
   </style>
 </head>
+
 <body>
   <h1>Notes App</h1>
 
@@ -19,7 +33,10 @@
   <ul id="notesList"></ul>
 
   <script>
-    const API_URL = 'http://localhost:8000'; // backend URL para Docker/localhost
+    // Dynamic API URL: 
+    // - If accessing via notes-app.local (Ingress), use relative path (requests go to same domain/port)
+    // - If accessing via localhost:3000 (Dev), go to localhost:8000
+    const API_URL = window.location.hostname === 'notes-app.local' ? '' : 'http://localhost:8000';
 
     async function fetchNotes() {
       const res = await fetch(`${API_URL}/notes`);
@@ -37,7 +54,7 @@
       const input = document.getElementById('noteInput');
       const note = input.value;
       if (!note) return alert('Write something!');
-      
+
       const res = await fetch(`${API_URL}/notes?note=${encodeURIComponent(note)}`, {
         method: 'POST'
       });
@@ -54,4 +71,5 @@
     fetchNotes();
   </script>
 </body>
+
 </html>

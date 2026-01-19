@@ -11,11 +11,12 @@ resource "kubernetes_ingress_v1" "ingress" {
     ingress_class_name = "nginx"
     
     tls {
-      hosts = ["frontend.local", "backend.local"]
+      hosts = ["notes-app.local"]
       secret_name = kubernetes_secret_v1.tls_secret.metadata[0].name
     }
 
     rule {
+      host = "notes-app.local"
       http {
         path {
           path      = "/"

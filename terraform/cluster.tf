@@ -16,7 +16,7 @@ resource "minikube_cluster" "docker" {
   ]
 }
 
-# Outputs para debugging (opcional)
+# Outputs for debugging 
 output "cluster_ip" {
   value = minikube_cluster.docker.host
 }

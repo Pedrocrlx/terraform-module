@@ -3,6 +3,7 @@ TERRAFORM_DIR := terraform
 SCRIPTS_DIR := scripts
 PROFILE := terraform-k8s-cluster
 
+SHELL := /bin/bash
 .PHONY: all help install init up clean forward ingress-info hosts
 
 help: ## Show this help
@@ -21,7 +22,8 @@ init: ## Initialize Terraform
 
 up: ## Apply Terraform configuration (Builds infra + images)
 	@echo "Applying infrastructure..."
-	@cd $(TERRAFORM_DIR) && terraform apply -auto-approve
+	@cd $(TERRAFORM_DIR) && terraform plan -out=k8s.plan
+	@cd $(TERRAFORM_DIR) && terraform apply k8s.plan
 
 clean: ## Destroy Terraform infrastructure
 	@echo "Destroying infrastructure..."
@@ -32,23 +34,35 @@ forward: ## Forward ports (Direct Access - bypasses Ingress/TLS). Use for debugg
 	@echo "Frontend: http://localhost:3000"
 	@echo "Backend:  http://localhost:8000"
 	@trap 'kill %1 %2 %3' SIGINT; \
-	kubectl port-forward svc/frontend 3000:3000 >/dev/null 2>&1 & \
-	kubectl port-forward svc/backend 8000:8000 >/dev/null 2>&1 & \
-	kubectl port-forward svc/postgres 5432:5432 >/dev/null 2>&1 & \
+	kubectl port-forward svc/frontend-service 3000:3000 >/dev/null 2>&1 & \
+	kubectl port-forward svc/backend-service 8000:8000 >/dev/null 2>&1 & \
+	kubectl port-forward svc/db-service 5432:5432 >/dev/null 2>&1 & \
 	wait
 
-hosts: ## Configure /etc/hosts (Requires sudo)
-	@echo "Getting Minikube IP..."
-	$(eval IP := $(shell minikube -p $(PROFILE) ip))
-	@if [ -z "$(IP)" ]; then echo "Error: Minikube is not running or IP not found"; exit 1; fi
-	@echo "Configuring /etc/hosts with IP $(IP) (Requires sudo password)..."
-	@chmod +x scripts/hosts.sh
-	@sudo ./scripts/hosts.sh $(IP)
+hosts: ## Configure /etc/hosts to point to localhost (Requires sudo)
+	@echo "Configuring /etc/hosts for notes-app.local..."
+	@echo "127.0.0.1 notes-app.local" | sudo tee -a /etc/hosts > /dev/null || true
+	@sudo sed -i '/192.168.49.2.*notes-app.local/d' /etc/hosts
+	@echo "✓ /etc/hosts configured"
 
-ingress-info: ## Show Ingress Access Info (Use this for HTTPS/TLS)
-	@echo "--- Ingress Access (HTTPS) ---"
-	@echo "Cluster IP: $$(minikube -p $(PROFILE) ip)"
-	@echo "Hosts defined in Ingress: frontend.local, backend.local"
+ingress-forward: ## Forward Ingress ports for HTTPS access (Keep running)
+	@echo "=== Ingress Port Forwarding ==="
+	@echo "This enables HTTPS access at: https://notes-app.local:8443"
+	@echo "Make sure /etc/hosts is configured (run 'make hosts' first)"
+	@echo "Press Ctrl+C to stop"
 	@echo ""
-	@echo "To setup automatically, run: make hosts"
-	@echo "Then open in browser: https://frontend.local"
+	@kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8443:443
+
+ingress-info: ## Show Ingress Access Info
+	@echo "--- Ingress HTTPS Access ---"
+	@echo ""
+	@echo "Step 1: Configure /etc/hosts"
+	@echo "  $$ make hosts"
+	@echo ""
+	@echo "Step 2: Start Ingress port forwarding (in separate terminal or background)"
+	@echo "  $$ make ingress-forward"
+	@echo ""
+	@echo "Step 3: Open browser and access:"
+	@echo "  🌐 https://notes-app.local:8443"
+	@echo ""
+	@echo "Note: You'll need to accept the self-signed certificate warning"
